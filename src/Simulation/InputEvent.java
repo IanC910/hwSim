@@ -32,11 +32,11 @@ public class InputEvent implements Comparable<InputEvent> {
     }
 
     @Override
-    public int compareTo(InputEvent o) {
-        if(this.startTimeNs == o.getStartTimeNs()) {
+    public int compareTo(InputEvent event) {
+        if(this.startTimeNs == event.getStartTimeNs()) {
             return 0;
         }
-        else if(this.startTimeNs < o.getStartTimeNs()) {
+        else if(this.startTimeNs < event.getStartTimeNs()) {
             return -1;
         }
         return 1;
