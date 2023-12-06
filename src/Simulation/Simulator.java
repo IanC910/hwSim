@@ -1,6 +1,7 @@
 
 package Simulation;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 
@@ -31,18 +32,32 @@ public class Simulator {
         return currentTimeNs;
     }
 
+    public void initializeNetlist(LinkedList<Component> netlist) {
+        Iterator<Component> netlistIterator = netlist.iterator();
+
+        while(netlistIterator.hasNext()) {
+            Component component = netlistIterator.next();
+            if(component instanceof Constant) {
+                Constant constant = (Constant)component;
+                addReadersToUpdateQ(constant);
+            }
+        }
+
+        runSimForNs(0);
+    }
+
     public void runSimForNs(int runTimeNs) {
         if(runTimeNs < 0) {
             Debug.fatal("Simulator.runSimForNs()", "Negative run time");
         }
 
         int endTimeNs = currentTimeNs + runTimeNs;
-        boolean stopSim = false;
-        boolean allQsEmpty = false;
-        boolean nextEventAfterEndTime = false;
+        boolean doStopSim = false;
+        boolean areAllQsEmpty = false;
+        boolean isNextEventAfterEndTime = false;
 
         // Main Simulation Loop
-        while(!stopSim) {
+        while(!doStopSim) {
 
             if(!eventQ.isEmpty()) {
                 InputEvent event = eventQ.peek();
@@ -60,7 +75,7 @@ public class Simulator {
                     addReadersToUpdateQ(signalToAffect);
                 }
                 else {
-                    nextEventAfterEndTime = true;
+                    isNextEventAfterEndTime = true;
                 }
 
                 // TODO: use time for waveform creation
@@ -93,8 +108,8 @@ public class Simulator {
                 }
             } // while at least 1 queue is not empty 
 
-            allQsEmpty = eventQ.isEmpty() && signalUpdateQ.isEmpty() && risingEdgeQ.isEmpty();
-            stopSim = nextEventAfterEndTime || allQsEmpty;
+            areAllQsEmpty = eventQ.isEmpty() && signalUpdateQ.isEmpty() && risingEdgeQ.isEmpty();
+            doStopSim = isNextEventAfterEndTime || areAllQsEmpty;
         } // Main Simulation Loop
 
         this.currentTimeNs = endTimeNs;

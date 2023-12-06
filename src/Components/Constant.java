@@ -9,6 +9,10 @@ public class Constant extends WireVector {
         this.setValue(value);
     }
 
+    public Constant(int msbIndex, int lsbIndex, String name, Component parent, int value) {
+        this(msbIndex, lsbIndex, VectorType.UNSIGNED, name, parent, value);
+    }
+
     @Override
     public void update() {}
 }

@@ -10,7 +10,7 @@ public class Demultiplexer extends Component {
     protected WireVector sel; // Select
 
     // Inner signals
-    protected AndEnabler[] andEns;
+    protected AndEnabler[] andEnablers;
     protected NotGate notSel;
 
     public Demultiplexer(int width, String name, Component parent) {
@@ -21,20 +21,20 @@ public class Demultiplexer extends Component {
         input = new WireVector(width - 1, 0, "input", this);
         sel = new WireVector(0, 0, "sel", this);
         outputs = new WireVector[numOutputs];
-        andEns = new AndEnabler[numOutputs];
+        andEnablers = new AndEnabler[numOutputs];
         notSel = new NotGate("notSel", this);
 
         for(int i = 0; i < numOutputs; i++) {
             outputs[i] = new WireVector(width - 1, 0, "output" + i, this);
-            andEns[i] = new AndEnabler(width, "andEn" + i, this);
+            andEnablers[i] = new AndEnabler(width, "andEn" + i, this);
 
-            input.drive(andEns[i]);
-            andEns[i].drive(outputs[i]);
+            input.drive(andEnablers[i]);
+            andEnablers[i].drive(outputs[i]);
         }
 
         sel.drive(notSel);
-        notSel.drive(andEns[0].getEna());
-        sel.drive(andEns[1].getEna());
+        notSel.drive(andEnablers[0].getEna());
+        sel.drive(andEnablers[1].getEna());
     }
 
     public WireVector getInput() {
